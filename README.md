@@ -1,12 +1,12 @@
 # VPM Related Posts
 
-*VPM Related Posts* is a WordPress plugin for simple, no-frills related posts. Pass an ID and get a set of related posts. It's that easy.
+**VPM Related Posts** is a WordPress plugin for simple, no-frills related posts. Pass an ID and get a set of related posts. It's that easy.
 
 A few caveats/tidbits you should be aware of:
 
 +   Related posts are cached as transients for 48 hours (by default).
 +   Relations are calculated using MySQL regexp, to prevent needing to reindex your post content as MySQL FULLTEXT. This means results are likely to be—at best—mediocre. MySQL wizards are welcomed to submit pull requests that improve this functionality; my attempt is a quick hack.
-+   Due to the use of namespaces, PHP 5.3 is *required*.
++   Due to the use of namespaces, PHP 5.3 is **required**.
 +   Because it's developer oriented, this plugin will _probably_ never make it into the WordPress Repository. I suggest using Composer to add this dependency to your project.
 
 ## Usage
@@ -18,11 +18,13 @@ The namespaced function `\VanPattenMedia\relatedPosts( $postID )` will return an
 $relatedPosts = \VanPattenMedia\relatedPosts( get_the_id() );
 
 if ( is_array( $relatedPosts ) && ! empty( $relatedPosts ) ) {
+	echo '<ul>';
+
 	foreach( $relatedPosts as $relatedPost ) {
-		echo '<ul>';
 		echo '<li><a href="' . get_the_permalink( $relatedPost->ID ) . '">' . $relatedPost->post_title . '</a></li>';
-		echo '</ul>';
 	}
+
+	echo '</ul>';
 }
 ```
 
