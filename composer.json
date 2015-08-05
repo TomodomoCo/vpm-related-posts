@@ -1,0 +1,16 @@
+{
+    "name": "vanpattenmedia/vpm-related-posts",
+    "description": "Simple related posts for developers",
+    "keywords": ["wordpress", "plugins"],
+    "homepage": "https://www.vanpattenmedia.com/",
+    "authors": [
+        {
+            "name": "Chris Van Patten",
+            "homepage": "https://www.chrisvanpatten.com/"
+        }
+    ],
+    "type": "wordpress-plugin",
+    "require": {
+        "composer/installers": "~1.0"
+    }
+}
