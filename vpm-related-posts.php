@@ -4,7 +4,7 @@ Plugin Name: VPM Related Posts
 Plugin URI: https://www.vanpattenmedia.com/
 Description: Simple related posts for developers
 Author: Van Patten Media
-Version: 0.1
+Version: 1.0.0
 Author URI: https://www.vanpattenmedia.com/
 */
 
