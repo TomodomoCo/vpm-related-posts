@@ -30,15 +30,26 @@ if ( is_array( $relatedPosts ) && ! empty( $relatedPosts ) ) {
 
 There are a number of filters provided to make it easier to adjust the query and results.
 
-Filter Name                             | Description
-----------------------------------------|-----------------------------------------------------------------------------------------------
-`vpm_related_posts_stopwords`           | An array of stopwords that will be filtered from all searches
-`vpm_related_posts_contentprepared`     | A tag-stripped, lower-cased version of your content, before filtering stopwords
-`vpm_related_posts_regexfilter`         | The regex string that will be passed into `preg_replace` to filter unneeded text/characters
-`vpm_related_posts_searchregexp`        | The regexp we'll pass to `$wpdb->prepare` to get our list of related posts
-`vpm_related_posts_searchcount`         | An int of the number of posts to return. Default is 5
-`vpm_related_posts_wpdbquery`           | The full query that will be passed into `$wpdb->prepare`
-`vpm_related_posts_transientexpiration` | An int representing the transient expiration time in seconds. Default is 2 days/172800 seconds
+Filter Name                             | Type   | Description
+----------------------------------------|--------|-------------------------------------------------------------------------------------
+`vpm_related_posts_stopwords`           | array  | An array of stopwords that will be filtered from all searches
+`vpm_related_posts_contentprepared`     | string | A tag-stripped, lower-cased version of your content, before filtering stopwords
+`vpm_related_posts_regexfilter`         | string | The regex that will be passed into `preg_replace` to filter unneeded text/characters
+`vpm_related_posts_keywordthreshold`    | int    | If the list of keywords used multiple times meets this threshold, use those keywords
+`vpm_related_posts_searchregexp`        | string | The regexp we'll pass to `$wpdb->prepare` to get our list of related posts
+`vpm_related_posts_searchcount`         | int    | An int of the number of posts to return. Default is 5
+`vpm_related_posts_wpdbquery`           | string | The full query that will be passed into `$wpdb->prepare`
+`vpm_related_posts_transientexpiration` | int    | The transient expiration time in seconds. Default is 2 days/172800 seconds
+
+## Changelog
+
+### 1.1.0
++ Refined the keyword filter to remove empty values
++ Add method to only return keywords that are mentioned multiple times in the content
++ Run the search based on keywords with multiple uses if the number of those keywords meets a filterable threshold
+
+### 1.0.0
++ Initial commit
 
 ## License
 

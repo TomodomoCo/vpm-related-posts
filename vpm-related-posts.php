@@ -20,7 +20,7 @@ class RelatedPosts {
 
 	/**
 	 * List of stopwords to strip
-	 * 
+	 *
 	 * @var array
 	 */
 	private $stopWords = array(
@@ -718,8 +718,46 @@ class RelatedPosts {
 		// Run the filter
 		$content = trim( preg_replace( $regexFilter, '', $contentPrepared ) );
 
-		// Return the array version
-		return array_unique( explode( ' ', $content ) );
+		// Get the keyword array
+		$keywords = explode( ' ', $content );
+
+		// Filter out empty values and return the array
+		return array_filter( $keywords );
+	}
+
+	/**
+	 * Get keywords that appear multiple times in the corpus of content
+	 *
+	 * @since 1.1.0
+	 * @return array
+	 */
+	public function getDuplicateSearchKeywords()
+	{
+		// Grab the full list of keywords
+		$keywords = $this->getSearchKeywords();
+
+		// Count the values
+		$counted = array_count_values( $keywords );
+
+		// Filter out anything that doesn't appear multiple times
+		$keywords = array_filter( $counted, function( $count ) {
+			if ( $count > 1 )
+				return true;
+		} );
+
+		// Flip it and re-count the array
+		return array_keys( $keywords );
+	}
+
+	/**
+	 * Get all the search keywords, with any duplicates removed
+	 *
+	 * @since 1.1.0
+	 * @return array
+	 */
+	public function getAllSearchKeywords()
+	{
+		return array_unique( $this->getSearchKeywords() );
 	}
 
 	/**
@@ -736,8 +774,23 @@ class RelatedPosts {
 		if ( false !== ( $relatedPosts = get_transient( 'vpm_related_posts_relatedto_' . $this->postId ) ) )
 			return $relatedPosts;
 
-		// Grab our keywords
-		$keywords = str_replace( '||', '|', implode( '|', $this->getSearchKeywords() ) );
+		// Set the threshold of multi-keywords
+		$keywordThreshold = absint( apply_filters( 'vpm_related_posts_keywordthreshold', 5 ) );
+
+		// If there are more than $threshold of the multi-keywords, use those for the match
+		if ( count( $this->getDuplicateSearchKeywords() ) > $keywordThreshold ) {
+
+			$keywords = $this->getDuplicateSearchKeywords();
+
+		} else {
+
+			// Otherwise, return them all
+			$keywords = $this->getAllSearchKeywords();
+
+		}
+
+		// Build our regexp
+		$keywords = implode( '|', $keywords );
 
 		// Build the search query
 		$searchRegexp = apply_filters( 'vpm_related_posts_regexp', $keywords );
@@ -751,7 +804,8 @@ class RelatedPosts {
 		// Build our query
 		$wpdbQuery = "
 			SELECT ID FROM $wpdb->posts
-			WHERE post_content REGEXP '%s'
+			WHERE ID NOT IN ($this->postId)
+			AND post_content REGEXP '%s'
 			AND post_status = 'publish'
 			AND post_type = 'post'
 			ORDER BY RAND() LIMIT %d
