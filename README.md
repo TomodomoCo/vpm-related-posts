@@ -11,7 +11,14 @@ A few caveats/tidbits you should be aware of:
 
 ## Usage
 
-The namespaced function `\VanPattenMedia\relatedPosts( $postID )` will return an array of `WP_Post` objects.
+The namespaced function `\VanPattenMedia\relatedPosts()` will return an array of posts.
+
+It accepts two parameters:
+
+1.  `$postId` (int) (Required) - The ID of the post to get related content for
+2.  `$returnObjects` (bool) (Optional; default: `true`) - Set to `true` (or leave unset) for an array of `WP_Post` objects, or false for an array of post IDs (ideal for using as the `post__in` value in a `WP_Query` call)
+
+### Example
 
 ```php
 <?php

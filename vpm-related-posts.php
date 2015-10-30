@@ -763,16 +763,28 @@ class RelatedPosts {
 	/**
 	 * Fetch the related posts
 	 *
+	 * @param int $postId
+	 * @param bool $returnObjects
+	 *
 	 * @return array
 	 */
-	public function get( $postId )
+	public function get( $postId, $returnObjects = true )
 	{
 		// Set the post ID
 		$this->postId = absint( $postId );
 
-		// Check to see if we have related posts cached in a transient
-		if ( false !== ( $relatedPosts = get_transient( 'vpm_related_posts_relatedto_' . $this->postId ) ) )
-			return $relatedPosts;
+		// Check which return type we want to deal with
+		if ( $returnObjects === true ) {
+
+			// Check to see if we have related posts cached in a transient
+			if ( false !== ( $relatedPosts = get_transient( 'vpm_related_posts_relatedPostObjects_' . $this->postId ) ) )
+				return $relatedPosts;
+		} else {
+
+			// Check to see if we have related posts cached in a transient
+			if ( false !== ( $relatedPosts = get_transient( 'vpm_related_posts_relatedPostIds_' . $this->postId ) ) )
+				return $relatedPosts;
+		}
 
 		// Set the threshold of multi-keywords
 		$keywordThreshold = absint( apply_filters( 'vpm_related_posts_keywordthreshold', 5 ) );
@@ -822,17 +834,24 @@ class RelatedPosts {
 
 		// Iterate through results
 		foreach ( $results as $result ) {
-			$this->relatedPosts[] = get_post( $result->ID );
+			$this->relatedPostObjects[] = get_post( $result->ID );
+			$this->relatedPostIds[]     = $result->ID;
 		}
 
 		// Grab the transient expiration time
 		$transientExpiration = absint( apply_filters( 'vpm_related_posts_transientexpiration', DAY_IN_SECONDS * 2 ) );
 
-		// Cache the related posts as a transient
-		set_transient( 'vpm_related_posts_relatedto_' . $this->postId, $this->relatedPosts, $transientExpiration );
+		// Cache the related posts as separate transients for objects and IDs
+		set_transient( 'vpm_related_posts_relatedPostObjects_' . $this->postId, $this->relatedPostObjects, $transientExpiration );
+		set_transient( 'vpm_related_posts_relatedPostIds_' . $this->postId, $this->relatedPostIds, $transientExpiration );
 
-		// Return the related posts
-		return $this->relatedPosts;
+		// Return the related posts as objects or IDs
+		if ( $returnObjects === true )
+			return $this->relatedPostObjects;
+		else
+			return $this->relatedPostIds;
+
+		return;
 	}
 
 }
@@ -843,9 +862,12 @@ $vpmRelatedPosts = new \VanPattenMedia\RelatedPosts;
 /**
  * Helper function
  *
+ * @param int $postId
+ * @param bool $returnObjects
+ *
  * @return array
  */
-function relatedPosts( $postId ) {
+function relatedPosts( $postId, $returnObjects = true ) {
 	global $vpmRelatedPosts;
-	return $vpmRelatedPosts->get( $postId );
+	return $vpmRelatedPosts->get( $postId, $returnObjects );
 }
