@@ -52,6 +52,9 @@ Filter Name                             | Type   | Description
 
 ## Changelog
 
+### 1.2.0
++ Added a `$returnObjects` parameter to select between returning an array of `WP_Post` objects or an array of post IDs (true, the default, returns objects; false returns IDs)
+
 ### 1.1.0
 + Refined the keyword filter to remove empty values
 + Add method to only return keywords that are mentioned multiple times in the content
